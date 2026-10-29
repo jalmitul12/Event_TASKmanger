@@ -1,0 +1,158 @@
+{
+  "events": [
+    {
+      "id": "evt_1",
+      "name": "Annual TechFest: Ignitia 2026",
+      "description": "The flagship inter-college technical festival featuring coding competitions, robotics arenas, paper presentations, and guest keynotes.",
+      "category": "Tech Fest",
+      "startDate": "2026-11-15",
+      "endDate": "2026-11-17",
+      "venue": "Main University Auditorium & CS Labs",
+      "status": "Active",
+      "createdAt": "2026-10-15T09:00:00.000Z"
+    },
+    {
+      "id": "evt_2",
+      "name": "HackVision: 24-Hour AI Hackathon",
+      "description": "An intense 24-hour sprint bringing together 60 student teams to develop AI and IoT solutions for sustainable smart cities.",
+      "category": "Hackathon",
+      "startDate": "2026-11-28",
+      "endDate": "2026-11-29",
+      "venue": "Innovation & Incubation Hub, 3rd Floor",
+      "status": "Planning",
+      "createdAt": "2026-10-18T11:30:00.000Z"
+    },
+    {
+      "id": "evt_3",
+      "name": "Cloud Native Architecture Workshop",
+      "description": "Hands-on masterclass on containerization, microservices deployment, and DevOps pipelines using modern cloud tools.",
+      "category": "Workshop",
+      "startDate": "2026-11-05",
+      "endDate": "2026-11-06",
+      "venue": "Seminar Hall B & Virtual Stream",
+      "status": "Active",
+      "createdAt": "2026-10-20T14:15:00.000Z"
+    },
+    {
+      "id": "evt_4",
+      "name": "Cultural Fest: Tarangini 2026",
+      "description": "A vibrant celebration of music, dance, theatrical arts, and photography welcoming over 2,000 students from across the region.",
+      "category": "Cultural",
+      "startDate": "2026-12-10",
+      "endDate": "2026-12-12",
+      "venue": "Open Air Amphitheatre",
+      "status": "Planning",
+      "createdAt": "2026-10-22T16:45:00.000Z"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "tsk_1",
+      "title": "Finalize Guest Keynote Speakers",
+      "description": "Contact and confirm travel logistics for keynote speakers from AI research labs.",
+      "eventId": "evt_1",
+      "priority": "High",
+      "status": "Completed",
+      "dueDate": "2026-10-25",
+      "assignedTo": "Sarah Jenkins",
+      "createdAt": "2026-10-16T10:00:00.000Z",
+      "updatedAt": "2026-10-24T15:20:00.000Z"
+    },
+    {
+      "id": "tsk_2",
+      "title": "Set up High-Speed Network in Lab 3",
+      "description": "Coordinate with IT infrastructure team to reserve IP pools and test gigabit switches for coding contests.",
+      "eventId": "evt_1",
+      "priority": "High",
+      "status": "In Progress",
+      "dueDate": "2026-11-10",
+      "assignedTo": "Arjun Sharma",
+      "createdAt": "2026-10-16T11:15:00.000Z",
+      "updatedAt": "2026-10-27T08:30:00.000Z"
+    },
+    {
+      "id": "tsk_3",
+      "title": "Print Participant Badges & Certificates",
+      "description": "Finalize badge designs with media team and send 500 copies for offset printing.",
+      "eventId": "evt_1",
+      "priority": "Medium",
+      "status": "Pending",
+      "dueDate": "2026-11-12",
+      "assignedTo": "Priya Patel",
+      "createdAt": "2026-10-17T13:00:00.000Z",
+      "updatedAt": "2026-10-17T13:00:00.000Z"
+    },
+    {
+      "id": "tsk_4",
+      "title": "Sponsor Booth Allocation & Banners",
+      "description": "Map out 3x3m exhibition spaces in the main foyer and confirm branding assets.",
+      "eventId": "evt_1",
+      "priority": "Low",
+      "status": "Pending",
+      "dueDate": "2026-11-14",
+      "assignedTo": "David Kim",
+      "createdAt": "2026-10-17T14:45:00.000Z",
+      "updatedAt": "2026-10-17T14:45:00.000Z"
+    },
+    {
+      "id": "tsk_5",
+      "title": "Publish Hackathon Problem Statements",
+      "description": "Review problem statement tracks with industry partners and upload PDF to the portal.",
+      "eventId": "evt_2",
+      "priority": "High",
+      "status": "In Progress",
+      "dueDate": "2026-11-20",
+      "assignedTo": "Elena Rostova",
+      "createdAt": "2026-10-19T09:30:00.000Z",
+      "updatedAt": "2026-10-28T12:00:00.000Z"
+    },
+    {
+      "id": "tsk_6",
+      "title": "Arrange Midnight Catering & Refreshments",
+      "description": "Sign vendor contract for tea, coffee stations, energy bars, and midnight pizza deliveries.",
+      "eventId": "evt_2",
+      "priority": "Medium",
+      "status": "Pending",
+      "dueDate": "2026-11-22",
+      "assignedTo": "Rohan Mehta",
+      "createdAt": "2026-10-19T10:00:00.000Z",
+      "updatedAt": "2026-10-19T10:00:00.000Z"
+    },
+    {
+      "id": "tsk_7",
+      "title": "Deploy Cloud Sandbox Environments",
+      "description": "Create 50 temporary lab accounts with Kubernetes clusters and pre-loaded Docker images.",
+      "eventId": "evt_3",
+      "priority": "High",
+      "status": "Completed",
+      "dueDate": "2026-10-28",
+      "assignedTo": "Vikram Das",
+      "createdAt": "2026-10-21T09:00:00.000Z",
+      "updatedAt": "2026-10-27T17:00:00.000Z"
+    },
+    {
+      "id": "tsk_8",
+      "title": "Distribute Workshop Pre-requisite Guide",
+      "description": "Send welcome email to registered students with GitHub repo link and installation instructions.",
+      "eventId": "evt_3",
+      "priority": "Medium",
+      "status": "In Progress",
+      "dueDate": "2026-11-03",
+      "assignedTo": "Vikram Das",
+      "createdAt": "2026-10-21T11:00:00.000Z",
+      "updatedAt": "2026-10-28T14:30:00.000Z"
+    },
+    {
+      "id": "tsk_9",
+      "title": "Confirm Sound & Stage Lighting Crew",
+      "description": "Inspect amphitheatre power sockets, audio consoles, and test line arrays.",
+      "eventId": "evt_4",
+      "priority": "Medium",
+      "status": "Pending",
+      "dueDate": "2026-12-01",
+      "assignedTo": "Ananya Roy",
+      "createdAt": "2026-10-23T15:00:00.000Z",
+      "updatedAt": "2026-10-23T15:00:00.000Z"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<<<<<<< HEAD
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Railway Reservation System</title>
@@ -92,3 +93,1157 @@
     <script src="script.js"></script>
 </body>
 </html>
+=======
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Task Manager</title>
+  
+  <!-- Reference: https://fonts.google.com/specimen/Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Google Material Symbols Reference -->
+  <!-- Reference: https://fonts.google.com/icons -->
+  <!-- Reference: https://developers.google.com/fonts/docs/material_symbols -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+  
+  <!-- Reference: https://bootstrapmade.com/theevent-conference-event-bootstrap-template/ -->
+  <!-- Reference: https://github.com/StartBootstrap/startbootstrap-sb-admin -->
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <!-- Reference: https://vuejs.org/guide/quick-start.html#using-vue-from-cdn -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+
+  <!-- Root Vue Application -->
+  <div id="app" v-cloak>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" v-if="notification.show">
+      <div :class="['toast', notification.type === 'success' ? 'toast-success' : 'toast-error']">
+        <span>{{ notification.message }}</span>
+        <button class="toast-close" @click="dismissToast" aria-label="Dismiss notification">&times;</button>
+      </div>
+    </div>
+
+    <!-- Site Header & Navigation Bar -->
+    <!-- Reference: https://github.com/StartBootstrap/startbootstrap-sb-admin -->
+    <header class="site-header">
+      <div class="header-container">
+        
+        <!-- Brand Logo & Title -->
+        <div class="brand" @click="switchView('dashboard')">
+          <div class="brand-icon">
+            <span class="material-symbols-outlined">event_note</span>
+          </div>
+          <div class="brand-text">
+            <h1>EventFlow Manager</h1>
+            <p>Task & Event Organization</p>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+          <button 
+            :class="['nav-tab-btn', { active: activeView === 'dashboard' }]" 
+            @click="switchView('dashboard')">
+            <span class="material-symbols-outlined">dashboard</span>
+            Dashboard
+          </button>
+          <button 
+            :class="['nav-tab-btn', { active: activeView === 'events' }]" 
+            @click="switchView('events')">
+            <span class="material-symbols-outlined">event</span>
+            Events <span class="badge-counter">{{ totalEvents }}</span>
+          </button>
+          <button 
+            :class="['nav-tab-btn', { active: activeView === 'tasks' }]" 
+            @click="switchView('tasks')">
+            <span class="material-symbols-outlined">checklist</span>
+            Tasks <span class="badge-counter">{{ totalTasks }}</span>
+          </button>
+          <button 
+            v-if="selectedEvent"
+            :class="['nav-tab-btn', { active: activeView === 'event-details' }]" 
+            @click="switchView('event-details')">
+            <span class="material-symbols-outlined">info</span>
+            Event Details
+          </button>
+        </nav>
+
+        <!-- Quick Action Buttons -->
+        <div class="header-actions">
+          <button class="btn btn-secondary btn-sm" @click="openCreateEventModal">
+            <span class="material-symbols-outlined">add</span>
+            New Event
+          </button>
+          <button class="btn btn-primary btn-sm" @click="openCreateTaskModal()">
+            <span class="material-symbols-outlined">add</span>
+            New Task
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-wrapper">
+
+      <!-- ======================================================== -->
+      <!-- VIEW 1: DASHBOARD -->
+      <!-- ======================================================== -->
+      <section v-if="activeView === 'dashboard'" class="dashboard-view">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h2>Dashboard</h2>
+            <p>Summary of events, tasks, and upcoming deadlines</p>
+          </div>
+          <div>
+            <button class="btn btn-secondary btn-sm" @click="fetchAll">
+              <span v-if="loading" class="loading-spinner"></span>
+              <span v-else style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                <span class="material-symbols-outlined">sync</span>
+                Refresh
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Summary Statistics Grid -->
+        <div class="stats-grid">
+          
+          <div class="stat-card stat-primary">
+            <div class="stat-header">
+              <span class="stat-label">Total Events</span>
+              <div class="stat-icon">
+                <span class="material-symbols-outlined">event</span>
+              </div>
+            </div>
+            <div class="stat-val">{{ totalEvents }}</div>
+            <div class="stat-sub">Registered events</div>
+          </div>
+
+          <div class="stat-card stat-info">
+            <div class="stat-header">
+              <span class="stat-label">Active Events</span>
+              <div class="stat-icon">
+                <span class="material-symbols-outlined">bolt</span>
+              </div>
+            </div>
+            <div class="stat-val">{{ activeEventsCount }}</div>
+            <div class="stat-sub">{{ upcomingEventsCount }} upcoming</div>
+          </div>
+
+          <div class="stat-card stat-primary">
+            <div class="stat-header">
+              <span class="stat-label">Total Tasks</span>
+              <div class="stat-icon">
+                <span class="material-symbols-outlined">assignment</span>
+              </div>
+            </div>
+            <div class="stat-val">{{ totalTasks }}</div>
+            <div class="stat-sub">Across all events</div>
+          </div>
+
+          <div class="stat-card stat-success">
+            <div class="stat-header">
+              <span class="stat-label">Completed</span>
+              <div class="stat-icon">
+                <span class="material-symbols-outlined">check_circle</span>
+              </div>
+            </div>
+            <div class="stat-val">{{ completedTasksCount }}</div>
+            <div class="stat-sub">Finished tasks</div>
+          </div>
+
+          <div class="stat-card stat-warning">
+            <div class="stat-header">
+              <span class="stat-label">Pending</span>
+              <div class="stat-icon">
+                <span class="material-symbols-outlined">pending</span>
+              </div>
+            </div>
+            <div class="stat-val">{{ pendingTasksCount }}</div>
+            <div class="stat-sub">{{ inProgressTasksCount }} in progress</div>
+          </div>
+
+          <div class="stat-card stat-danger">
+            <div class="stat-header">
+              <span class="stat-label">Overdue</span>
+              <div class="stat-icon">
+                <span class="material-symbols-outlined">error</span>
+              </div>
+            </div>
+            <div class="stat-val">{{ overdueTasksCount }}</div>
+            <div class="stat-sub">Missed target date</div>
+          </div>
+
+          <div class="stat-card stat-success">
+            <div class="stat-header">
+              <span class="stat-label">Completion Rate</span>
+              <div class="stat-icon">
+                <span class="material-symbols-outlined">trending_up</span>
+              </div>
+            </div>
+            <div class="stat-val">{{ overallCompletionRate }}%</div>
+            <div class="stat-sub">
+              <div class="progress-track" style="margin-top: 4px;">
+                <div 
+                  :class="['progress-fill', { complete: overallCompletionRate === 100 }]" 
+                  :style="{ width: overallCompletionRate + '%' }">
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 2 Column Layout: Event Progress Tracker & Upcoming Deadlines -->
+        <div class="dashboard-columns">
+          
+          <!-- Column 1: Event Progress Cards -->
+          <div class="content-panel">
+            <div class="panel-header">
+              <h3>Event Progress Tracker</h3>
+              <button class="btn btn-secondary btn-sm" @click="switchView('events')">View All</button>
+            </div>
+
+            <div v-if="events.length === 0" class="empty-state">
+              <div class="empty-state-icon">
+                <span class="material-symbols-outlined" style="font-size: 40px;">folder_open</span>
+              </div>
+              <h4>No Events Created Yet</h4>
+              <p>Create an event to start organizing associated tasks and milestones.</p>
+              <button class="btn btn-primary btn-sm" @click="openCreateEventModal">
+                <span class="material-symbols-outlined">add</span> Create First Event
+              </button>
+            </div>
+
+            <div v-else>
+              <div 
+                v-for="event in events" 
+                :key="event.id" 
+                class="event-progress-item">
+                <div class="event-progress-meta">
+                  <span class="event-progress-title" @click="viewEventDetails(event.id)">
+                    {{ event.name }}
+                  </span>
+                  <span class="event-progress-stat">
+                    {{ getEventTaskStats(event.id).completed }}/{{ getEventTaskStats(event.id).total }} tasks ({{ calculateEventProgress(event) }}%)
+                  </span>
+                </div>
+                <div class="progress-track">
+                  <div 
+                    :class="['progress-fill', { complete: calculateEventProgress(event) === 100 }]" 
+                    :style="{ width: calculateEventProgress(event) + '%' }">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Upcoming Deadlines -->
+          <div class="content-panel">
+            <div class="panel-header">
+              <h3>Upcoming Deadlines</h3>
+              <button class="btn btn-secondary btn-sm" @click="switchView('tasks')">Task Board</button>
+            </div>
+
+            <div v-if="upcomingDeadlines.length === 0" class="empty-state">
+              <div class="empty-state-icon">
+                <span class="material-symbols-outlined" style="font-size: 40px;">check_circle</span>
+              </div>
+              <h4>All Caught Up!</h4>
+              <p>No pending task deadlines in the immediate schedule.</p>
+            </div>
+
+            <div v-else>
+              <div 
+                v-for="task in upcomingDeadlines" 
+                :key="task.id" 
+                :class="['deadline-item', { overdue: isOverdue(task.dueDate, task.status) }]">
+                <div class="deadline-info">
+                  <h4>{{ task.title }}</h4>
+                  <p>Event: {{ getEventName(task.eventId) }} &bull; Assigned: {{ task.assignedTo || 'Unassigned' }}</p>
+                </div>
+                <div class="deadline-actions">
+                  <span 
+                    :class="['deadline-badge', { urgent: isOverdue(task.dueDate, task.status) }]">
+                    {{ isOverdue(task.dueDate, task.status) ? 'Overdue: ' + formatDate(task.dueDate) : 'Due: ' + formatDate(task.dueDate) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+
+      <!-- ======================================================== -->
+      <!-- VIEW 2: EVENTS DIRECTORY -->
+      <!-- Reference: https://bootstrapmade.com/theevent-conference-event-bootstrap-template/ -->
+      <!-- ======================================================== -->
+      <section v-if="activeView === 'events'" class="events-view">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h2>Event Directory</h2>
+            <p>Manage all scheduled events, locations, and schedules</p>
+          </div>
+          <button class="btn btn-primary" @click="openCreateEventModal">
+            <span class="material-symbols-outlined">add</span> Create New Event
+          </button>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="filter-bar">
+          <div class="search-box">
+            <span class="material-symbols-outlined search-icon">search</span>
+            <input 
+              type="text" 
+              class="input search-input" 
+              placeholder="Search events by name, venue..."
+              v-model="eventSearchQuery"
+            >
+          </div>
+
+          <div class="filter-controls">
+            <select class="select select-sm" v-model="eventCategoryFilter">
+              <option value="All">All Categories</option>
+              <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+            </select>
+
+            <select class="select select-sm" v-model="eventStatusFilter">
+              <option value="All">All Statuses</option>
+              <option v-for="st in eventStatuses" :key="st" :value="st">{{ st }}</option>
+            </select>
+
+            <button class="btn btn-secondary btn-sm" @click="resetFilters">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div v-if="filteredEvents.length === 0" class="empty-state">
+          <div class="empty-state-icon">
+            <span class="material-symbols-outlined" style="font-size: 40px;">search_off</span>
+          </div>
+          <h4>No Events Found</h4>
+          <p>No events matched your search query or filter selection.</p>
+          <button class="btn btn-secondary btn-sm" @click="resetFilters">Clear Filters</button>
+        </div>
+
+        <!-- Event Cards Grid -->
+        <div v-else class="events-grid">
+          <div 
+            v-for="event in filteredEvents" 
+            :key="event.id" 
+            class="event-card">
+            
+            <div class="event-card-header">
+              <span :class="['category-tag', 'category-' + event.category.toLowerCase().replace(/\s+/g, '-')]">
+                {{ event.category }}
+              </span>
+              <span :class="['status-badge', 'status-' + event.status.toLowerCase().replace(/\s+/g, '-')]">
+                {{ event.status }}
+              </span>
+            </div>
+
+            <div class="event-card-body">
+              <h3 class="event-title" @click="viewEventDetails(event.id)">
+                {{ event.name }}
+              </h3>
+              <p class="event-description">
+                {{ event.description || 'No description provided.' }}
+              </p>
+
+              <div class="event-meta-list">
+                <div class="event-meta-item">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">location_on</span>
+                  <span><strong>Venue:</strong> {{ event.venue }}</span>
+                </div>
+                <div class="event-meta-item">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">calendar_month</span>
+                  <span><strong>Dates:</strong> {{ formatDate(event.startDate) }} &rarr; {{ formatDate(event.endDate) }}</span>
+                </div>
+              </div>
+
+              <!-- Dynamic Progress Bar -->
+              <div class="event-progress-section">
+                <div class="event-progress-label">
+                  <span>Progress</span>
+                  <span>{{ getEventTaskStats(event.id).completed }} of {{ getEventTaskStats(event.id).total }} tasks ({{ calculateEventProgress(event) }}%)</span>
+                </div>
+                <div class="progress-track">
+                  <div 
+                    :class="['progress-fill', { complete: calculateEventProgress(event) === 100 }]" 
+                    :style="{ width: calculateEventProgress(event) + '%' }">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="event-card-footer">
+              <button class="btn btn-primary btn-sm" @click="viewEventDetails(event.id)">
+                View Tasks &rarr;
+              </button>
+              <div style="display: flex; gap: 0.35rem;">
+                <button class="btn btn-secondary btn-sm" @click="openEditEventModal(event)" title="Edit event">
+                  <span class="material-symbols-outlined">edit</span> Edit
+                </button>
+                <button class="btn btn-danger-outline btn-sm" @click="confirmDeleteEvent(event)" title="Delete event">
+                  <span class="material-symbols-outlined">delete</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ======================================================== -->
+      <!-- VIEW 3: SINGLE EVENT DETAILS & ASSOCIATED TASKS -->
+      <!-- ======================================================== -->
+      <section v-if="activeView === 'event-details' && selectedEvent" class="event-detail-view">
+        <span class="breadcrumb" @click="switchView('events')">
+          <span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span>
+          Back to Events
+        </span>
+
+        <!-- Event Hero Banner -->
+        <div class="event-hero">
+          <div class="event-hero-header">
+            <div>
+              <span :class="['category-tag', 'category-' + selectedEvent.category.toLowerCase().replace(/\s+/g, '-')]" style="background: rgba(255,255,255,0.2); color: #fff;">
+                {{ selectedEvent.category }}
+              </span>
+              <h2 class="event-hero-title" style="margin-top: 0.5rem;">{{ selectedEvent.name }}</h2>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-secondary btn-sm" @click="openEditEventModal(selectedEvent)">
+                <span class="material-symbols-outlined">edit</span> Edit Event Details
+              </button>
+            </div>
+          </div>
+
+          <p class="event-hero-desc">{{ selectedEvent.description }}</p>
+
+          <div class="event-hero-meta">
+            <div class="event-hero-meta-item">
+              <span class="material-symbols-outlined" style="font-size: 16px;">location_on</span>
+              <span>Venue: <strong>{{ selectedEvent.venue }}</strong></span>
+            </div>
+            <div class="event-hero-meta-item">
+              <span class="material-symbols-outlined" style="font-size: 16px;">calendar_month</span>
+              <span>Duration: <strong>{{ formatDate(selectedEvent.startDate) }} to {{ formatDate(selectedEvent.endDate) }}</strong></span>
+            </div>
+            <div class="event-hero-meta-item">
+              <span>Status: <strong>{{ selectedEvent.status }}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Event Task Summary Statistics -->
+        <div class="event-detail-stats">
+          <div class="stat-card stat-primary">
+            <span class="stat-label">Total Event Tasks</span>
+            <div class="stat-val">{{ selectedEventMetrics.total }}</div>
+          </div>
+          <div class="stat-card stat-success">
+            <span class="stat-label">Tasks Completed</span>
+            <div class="stat-val">{{ selectedEventMetrics.completed }}</div>
+          </div>
+          <div class="stat-card stat-info">
+            <span class="stat-label">In Progress</span>
+            <div class="stat-val">{{ selectedEventMetrics.inProgress }}</div>
+          </div>
+          <div class="stat-card stat-warning">
+            <span class="stat-label">Pending</span>
+            <div class="stat-val">{{ selectedEventMetrics.pending }}</div>
+          </div>
+          <div class="stat-card stat-success">
+            <span class="stat-label">Completion %</span>
+            <div class="stat-val">{{ selectedEventMetrics.percent }}%</div>
+            <div class="progress-track" style="margin-top: 6px;">
+              <div 
+                :class="['progress-fill', { complete: selectedEventMetrics.percent === 100 }]" 
+                :style="{ width: selectedEventMetrics.percent + '%' }">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Event's Tasks Section -->
+        <div class="content-panel">
+          <div class="panel-header">
+            <h3>Associated Tasks ({{ selectedEventTasks.length }})</h3>
+            <button class="btn btn-primary btn-sm" @click="openCreateTaskModal(selectedEvent.id)">
+              <span class="material-symbols-outlined">add</span> Add Task to this Event
+            </button>
+          </div>
+
+          <div v-if="selectedEventTasks.length === 0" class="empty-state">
+            <div class="empty-state-icon">
+              <span class="material-symbols-outlined" style="font-size: 40px;">assignment_add</span>
+            </div>
+            <h4>No Tasks Assigned Yet</h4>
+            <p>Break this event down into actionable items with deadlines and assignees.</p>
+            <button class="btn btn-primary btn-sm" @click="openCreateTaskModal(selectedEvent.id)">
+              <span class="material-symbols-outlined">add</span> Add First Task
+            </button>
+          </div>
+
+          <!-- Event Tasks Table -->
+          <table v-else class="task-list-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;">Done</th>
+                <th>Task Title & Details</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th>Assignee</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="task in selectedEventTasks" :key="task.id" class="task-row">
+                <td>
+                  <input 
+                    type="checkbox" 
+                    class="task-checkbox" 
+                    :checked="task.status === 'Completed'" 
+                    @change="toggleTaskCompletion(task)"
+                  >
+                </td>
+                <td>
+                  <div class="task-title-cell">
+                    <span :class="['task-title-text', { completed: task.status === 'Completed' }]">
+                      {{ task.title }}
+                    </span>
+                  </div>
+                  <div v-if="task.description" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
+                    {{ task.description }}
+                  </div>
+                </td>
+                <td>
+                  <span :class="['priority-pill', 'priority-' + task.priority.toLowerCase()]">
+                    {{ task.priority }}
+                  </span>
+                </td>
+                <td>
+                  <select 
+                    class="select select-sm" 
+                    :value="task.status" 
+                    @change="updateTaskStatus(task.id, $event.target.value)"
+                    style="width: 130px;">
+                    <option v-for="st in taskStatuses" :key="st" :value="st">{{ st }}</option>
+                  </select>
+                </td>
+                <td>
+                  <span :class="['deadline-badge', { urgent: isOverdue(task.dueDate, task.status) }]">
+                    {{ formatDate(task.dueDate) }}
+                  </span>
+                </td>
+                <td>
+                  {{ task.assignedTo || '—' }}
+                </td>
+                <td style="text-align: right;">
+                  <button class="btn btn-secondary btn-sm" @click="openEditTaskModal(task)" title="Edit task">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="btn btn-danger-outline btn-sm" @click="confirmDeleteTask(task)" title="Delete task">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <!-- ======================================================== -->
+      <!-- VIEW 4: TASKS MANAGEMENT (LIST & BOARD) -->
+      <!-- Reference: https://github.com/CodeWithSindhu/kanban-board-js -->
+      <!-- ======================================================== -->
+      <section v-if="activeView === 'tasks'" class="tasks-view">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h2>Task Board</h2>
+            <p>Organize, prioritize, and track tasks across all scheduled events</p>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <!-- Switcher: List View vs. Board View -->
+            <div class="view-mode-switcher">
+              <button 
+                :class="['view-mode-btn', { active: taskViewMode === 'list' }]" 
+                @click="taskViewMode = 'list'">
+                <span class="material-symbols-outlined" style="font-size: 18px;">view_list</span>
+                List View
+              </button>
+              <button 
+                :class="['view-mode-btn', { active: taskViewMode === 'kanban' }]" 
+                @click="taskViewMode = 'kanban'">
+                <span class="material-symbols-outlined" style="font-size: 18px;">view_column</span>
+                Board
+              </button>
+            </div>
+
+            <button class="btn btn-primary" @click="openCreateTaskModal()">
+              <span class="material-symbols-outlined">add</span> Create Task
+            </button>
+          </div>
+        </div>
+
+        <!-- Task Filters and Search Bar -->
+        <div class="filter-bar">
+          <div class="search-box">
+            <span class="material-symbols-outlined search-icon">search</span>
+            <input 
+              type="text" 
+              class="input search-input" 
+              placeholder="Search tasks by title, assignee..."
+              v-model="taskSearchQuery"
+            >
+          </div>
+
+          <div class="filter-controls">
+            <!-- Event Filter -->
+            <select class="select select-sm" v-model="taskEventFilter">
+              <option value="All">All Events</option>
+              <option v-for="evt in events" :key="evt.id" :value="evt.id">{{ evt.name }}</option>
+            </select>
+
+            <!-- Status Filter -->
+            <select class="select select-sm" v-model="taskStatusFilter">
+              <option value="All">All Statuses</option>
+              <option v-for="st in taskStatuses" :key="st" :value="st">{{ st }}</option>
+            </select>
+
+            <!-- Priority Filter -->
+            <select class="select select-sm" v-model="taskPriorityFilter">
+              <option value="All">All Priorities</option>
+              <option v-for="pr in priorities" :key="pr" :value="pr">{{ pr }}</option>
+            </select>
+
+            <!-- Sort By -->
+            <select class="select select-sm" v-model="taskSortBy">
+              <option value="dueDate">Sort: Due Date</option>
+              <option value="priority">Sort: Priority</option>
+              <option value="createdAt">Sort: Created Date</option>
+            </select>
+
+            <!-- Overdue Toggle -->
+            <label style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; font-weight: 600; cursor: pointer;">
+              <input type="checkbox" v-model="taskOverdueFilter">
+              Overdue Only
+            </label>
+
+            <button class="btn btn-secondary btn-sm" @click="resetFilters">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div v-if="filteredTasks.length === 0" class="empty-state">
+          <div class="empty-state-icon">
+            <span class="material-symbols-outlined" style="font-size: 40px;">assignment_late</span>
+          </div>
+          <h4>No Tasks Found</h4>
+          <p>No tasks matched your active filter settings. Try adjusting your search query or reset filters.</p>
+          <button class="btn btn-secondary btn-sm" @click="resetFilters">Reset All Filters</button>
+        </div>
+
+        <!-- View Mode 1: List View -->
+        <div v-else-if="taskViewMode === 'list'">
+          <table class="task-list-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;">Done</th>
+                <th>Task Title</th>
+                <th>Associated Event</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th>Assigned To</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="task in filteredTasks" :key="task.id" class="task-row">
+                <td>
+                  <input 
+                    type="checkbox" 
+                    class="task-checkbox" 
+                    :checked="task.status === 'Completed'" 
+                    @change="toggleTaskCompletion(task)"
+                  >
+                </td>
+                <td>
+                  <div class="task-title-cell">
+                    <span :class="['task-title-text', { completed: task.status === 'Completed' }]">
+                      {{ task.title }}
+                    </span>
+                  </div>
+                  <div v-if="task.description" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
+                    {{ task.description }}
+                  </div>
+                </td>
+                <td>
+                  <span 
+                    style="font-size: 0.82rem; font-weight: 600; color: var(--primary); cursor: pointer;"
+                    @click="viewEventDetails(task.eventId)">
+                    {{ getEventName(task.eventId) }}
+                  </span>
+                </td>
+                <td>
+                  <span :class="['priority-pill', 'priority-' + task.priority.toLowerCase()]">
+                    {{ task.priority }}
+                  </span>
+                </td>
+                <td>
+                  <select 
+                    class="select select-sm" 
+                    :value="task.status" 
+                    @change="updateTaskStatus(task.id, $event.target.value)"
+                    style="width: 130px;">
+                    <option v-for="st in taskStatuses" :key="st" :value="st">{{ st }}</option>
+                  </select>
+                </td>
+                <td>
+                  <span :class="['deadline-badge', { urgent: isOverdue(task.dueDate, task.status) }]">
+                    {{ formatDate(task.dueDate) }}
+                  </span>
+                </td>
+                <td>
+                  {{ task.assignedTo || '—' }}
+                </td>
+                <td style="text-align: right;">
+                  <button class="btn btn-secondary btn-sm" @click="openEditTaskModal(task)" title="Edit task">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="btn btn-danger-outline btn-sm" @click="confirmDeleteTask(task)" title="Delete task">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- View Mode 2: Board View with Native HTML5 Drag and Drop -->
+        <!-- Reference: https://github.com/CodeWithSindhu/kanban-board-js -->
+        <!-- Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API -->
+        <div v-else class="kanban-grid">
+          
+          <!-- Column 1: Pending -->
+          <div class="kanban-column kanban-col-pending">
+            <div class="kanban-column-header">
+              <span class="kanban-column-title">Pending</span>
+              <span class="badge-counter">{{ kanbanTasks.pending.length }}</span>
+            </div>
+            <div 
+              class="kanban-dropzone" 
+              @dragover="onDragOver" 
+              @drop="onDrop($event, 'Pending')">
+              
+              <div 
+                v-for="task in kanbanTasks.pending" 
+                :key="task.id" 
+                class="kanban-card" 
+                draggable="true" 
+                @dragstart="onDragStart($event, task)">
+                
+                <div class="kanban-card-top">
+                  <span :class="['priority-pill', 'priority-' + task.priority.toLowerCase()]">
+                    {{ task.priority }}
+                  </span>
+                  <span style="font-size: 0.72rem; color: var(--text-muted);">
+                    {{ formatDate(task.dueDate) }}
+                  </span>
+                </div>
+
+                <h4 class="kanban-card-title">{{ task.title }}</h4>
+                <p v-if="task.description" class="kanban-card-desc">{{ task.description }}</p>
+
+                <div class="kanban-card-footer">
+                  <span style="color: var(--primary); font-weight: 600;" @click.stop="viewEventDetails(task.eventId)">
+                    {{ getEventName(task.eventId) }}
+                  </span>
+                  <div style="display: flex; gap: 0.25rem;">
+                    <button class="btn btn-secondary btn-sm" @click="openEditTaskModal(task)">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    <button class="btn btn-danger-outline btn-sm" @click="confirmDeleteTask(task)">
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+              <div v-if="kanbanTasks.pending.length === 0" style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 2rem 0;">
+                Drop tasks here
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: In Progress -->
+          <div class="kanban-column kanban-col-in-progress">
+            <div class="kanban-column-header">
+              <span class="kanban-column-title">In Progress</span>
+              <span class="badge-counter">{{ kanbanTasks.inProgress.length }}</span>
+            </div>
+            <div 
+              class="kanban-dropzone" 
+              @dragover="onDragOver" 
+              @drop="onDrop($event, 'In Progress')">
+              
+              <div 
+                v-for="task in kanbanTasks.inProgress" 
+                :key="task.id" 
+                class="kanban-card" 
+                draggable="true" 
+                @dragstart="onDragStart($event, task)">
+                
+                <div class="kanban-card-top">
+                  <span :class="['priority-pill', 'priority-' + task.priority.toLowerCase()]">
+                    {{ task.priority }}
+                  </span>
+                  <span style="font-size: 0.72rem; color: var(--text-muted);">
+                    {{ formatDate(task.dueDate) }}
+                  </span>
+                </div>
+
+                <h4 class="kanban-card-title">{{ task.title }}</h4>
+                <p v-if="task.description" class="kanban-card-desc">{{ task.description }}</p>
+
+                <div class="kanban-card-footer">
+                  <span style="color: var(--primary); font-weight: 600;" @click.stop="viewEventDetails(task.eventId)">
+                    {{ getEventName(task.eventId) }}
+                  </span>
+                  <div style="display: flex; gap: 0.25rem;">
+                    <button class="btn btn-secondary btn-sm" @click="openEditTaskModal(task)">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    <button class="btn btn-danger-outline btn-sm" @click="confirmDeleteTask(task)">
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+              <div v-if="kanbanTasks.inProgress.length === 0" style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 2rem 0;">
+                Drop tasks here
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 3: Completed -->
+          <div class="kanban-column kanban-col-completed">
+            <div class="kanban-column-header">
+              <span class="kanban-column-title">Completed</span>
+              <span class="badge-counter">{{ kanbanTasks.completed.length }}</span>
+            </div>
+            <div 
+              class="kanban-dropzone" 
+              @dragover="onDragOver" 
+              @drop="onDrop($event, 'Completed')">
+              
+              <div 
+                v-for="task in kanbanTasks.completed" 
+                :key="task.id" 
+                class="kanban-card" 
+                draggable="true" 
+                @dragstart="onDragStart($event, task)">
+                
+                <div class="kanban-card-top">
+                  <span :class="['priority-pill', 'priority-' + task.priority.toLowerCase()]">
+                    {{ task.priority }}
+                  </span>
+                  <span style="font-size: 0.72rem; color: var(--text-muted);">
+                    {{ formatDate(task.dueDate) }}
+                  </span>
+                </div>
+
+                <h4 class="kanban-card-title" style="text-decoration: line-through; color: var(--text-muted);">
+                  {{ task.title }}
+                </h4>
+                <p v-if="task.description" class="kanban-card-desc">{{ task.description }}</p>
+
+                <div class="kanban-card-footer">
+                  <span style="color: var(--primary); font-weight: 600;" @click.stop="viewEventDetails(task.eventId)">
+                    {{ getEventName(task.eventId) }}
+                  </span>
+                  <div style="display: flex; gap: 0.25rem;">
+                    <button class="btn btn-secondary btn-sm" @click="openEditTaskModal(task)">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    <button class="btn btn-danger-outline btn-sm" @click="confirmDeleteTask(task)">
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+              <div v-if="kanbanTasks.completed.length === 0" style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 2rem 0;">
+                Drop tasks here
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+
+    <!-- ======================================================== -->
+    <!-- MODAL 1: ADD / EDIT EVENT MODAL -->
+    <!-- Reference: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog -->
+    <!-- ======================================================== -->
+    <div class="modal-overlay" v-if="activeModal === 'event-form'" @click.self="closeModal">
+      <div class="modal-content">
+        
+        <div class="modal-header">
+          <h3>{{ modalMode === 'create' ? 'Create New Event' : 'Edit Event Details' }}</h3>
+          <button class="modal-close-btn" @click="closeModal" aria-label="Close modal">&times;</button>
+        </div>
+
+        <form @submit.prevent="submitEventForm">
+          <div class="modal-body">
+            
+            <div class="form-group">
+              <label>Event Name *</label>
+              <input 
+                type="text" 
+                class="input" 
+                v-model="eventForm.name" 
+                required
+              >
+              <div v-if="formErrors.name" class="form-error-msg">{{ formErrors.name }}</div>
+            </div>
+
+            <div class="form-group-row">
+              <div class="form-group">
+                <label>Category *</label>
+                <select class="select" v-model="eventForm.category">
+                  <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Status *</label>
+                <select class="select" v-model="eventForm.status">
+                  <option v-for="st in eventStatuses" :key="st" :value="st">{{ st }}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group-row">
+              <div class="form-group">
+                <label>Start Date *</label>
+                <input 
+                  type="date" 
+                  class="input" 
+                  v-model="eventForm.startDate" 
+                  required
+                >
+                <div v-if="formErrors.startDate" class="form-error-msg">{{ formErrors.startDate }}</div>
+              </div>
+
+              <div class="form-group">
+                <label>End Date *</label>
+                <input 
+                  type="date" 
+                  class="input" 
+                  v-model="eventForm.endDate" 
+                  required
+                >
+                <div v-if="formErrors.endDate" class="form-error-msg">{{ formErrors.endDate }}</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Venue / Location</label>
+              <input 
+                type="text" 
+                class="input" 
+                v-model="eventForm.venue"
+              >
+            </div>
+
+            <div class="form-group">
+              <label>Description</label>
+              <textarea 
+                class="textarea" 
+                rows="3" 
+                v-model="eventForm.description">
+              </textarea>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
+            <button type="submit" class="btn btn-primary" :disabled="loading">
+              <span v-if="loading" class="loading-spinner"></span>
+              <span v-else>{{ modalMode === 'create' ? 'Create Event' : 'Save Changes' }}</span>
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- MODAL 2: ADD / EDIT TASK MODAL -->
+    <!-- Reference: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog -->
+    <!-- ======================================================== -->
+    <div class="modal-overlay" v-if="activeModal === 'task-form'" @click.self="closeModal">
+      <div class="modal-content">
+        
+        <div class="modal-header">
+          <h3>{{ modalMode === 'create' ? 'Create New Task' : 'Edit Task Details' }}</h3>
+          <button class="modal-close-btn" @click="closeModal" aria-label="Close modal">&times;</button>
+        </div>
+
+        <form @submit.prevent="submitTaskForm">
+          <div class="modal-body">
+            
+            <div class="form-group">
+              <label>Task Title *</label>
+              <input 
+                type="text" 
+                class="input" 
+                v-model="taskForm.title" 
+                required
+              >
+              <div v-if="formErrors.title" class="form-error-msg">{{ formErrors.title }}</div>
+            </div>
+
+            <div class="form-group">
+              <label>Associated Event *</label>
+              <select class="select" v-model="taskForm.eventId" required>
+                <option value="" disabled>Select an Event</option>
+                <option v-for="evt in events" :key="evt.id" :value="evt.id">{{ evt.name }}</option>
+              </select>
+              <div v-if="formErrors.eventId" class="form-error-msg">{{ formErrors.eventId }}</div>
+            </div>
+
+            <div class="form-group-row">
+              <div class="form-group">
+                <label>Priority *</label>
+                <select class="select" v-model="taskForm.priority">
+                  <option v-for="pr in priorities" :key="pr" :value="pr">{{ pr }}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Status *</label>
+                <select class="select" v-model="taskForm.status">
+                  <option v-for="st in taskStatuses" :key="st" :value="st">{{ st }}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group-row">
+              <div class="form-group">
+                <label>Target Due Date</label>
+                <input 
+                  type="date" 
+                  class="input" 
+                  v-model="taskForm.dueDate"
+                >
+              </div>
+
+              <div class="form-group">
+                <label>Assigned Person</label>
+                <input 
+                  type="text" 
+                  class="input" 
+                  v-model="taskForm.assignedTo"
+                >
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Task Description</label>
+              <textarea 
+                class="textarea" 
+                rows="3" 
+                v-model="taskForm.description">
+              </textarea>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
+            <button type="submit" class="btn btn-primary" :disabled="loading">
+              <span v-if="loading" class="loading-spinner"></span>
+              <span v-else>{{ modalMode === 'create' ? 'Add Task' : 'Save Task' }}</span>
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+
+    <!-- ======================================================== -->
+    <!-- MODAL 3: CONFIRM DELETE DIALOG -->
+    <!-- ======================================================== -->
+    <div class="modal-overlay" v-if="activeModal === 'confirm-delete'" @click.self="closeModal">
+      <div class="modal-content" style="max-width: 440px;">
+        <div class="modal-header">
+          <h3>Confirm Deletion</h3>
+          <button class="modal-close-btn" @click="closeModal" aria-label="Close modal">&times;</button>
+        </div>
+
+        <div class="modal-body" v-if="deleteTarget">
+          <p style="font-size: 0.95rem; color: var(--text-main); margin-bottom: 0.75rem;">
+            Are you sure you want to permanently delete this {{ deleteTarget.type }}:
+          </p>
+          <div style="background-color: var(--bg-subtle); padding: 0.85rem; border-radius: var(--radius-md); font-weight: 700; margin-bottom: 1rem;">
+            "{{ deleteTarget.name }}"
+          </div>
+          <p v-if="deleteTarget.type === 'event'" style="font-size: 0.82rem; color: var(--danger); font-weight: 600;">
+            Warning: Deleting an event will also automatically delete all tasks associated with it!
+          </p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
+          <button type="button" class="btn btn-danger" @click="executeDelete" :disabled="loading">
+            <span v-if="loading" class="loading-spinner"></span>
+            <span v-else>Confirm &amp; Delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+      <p>&copy; EventFlow Task Manager</p>
+    </footer>
+
+  </div>
+
+  <!-- Main Vue Application Initialization -->
+  <script src="/js/app.js"></script>
+</body>
+</html>
+>>>>>>> d5d898065cd3acdcc4b7ad192c27e2507c55267d

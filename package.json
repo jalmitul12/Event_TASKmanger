@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "railway-reservation",
   "version": "1.0.0",
   "description": "Railway Reservation System",
@@ -14,4 +15,24 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs"
+=======
+  "name": "event-task-manager",
+  "version": "1.0.0",
+  "description": "Full-stack Event Task Manager using HTML5, CSS3, Vue.js 3 CDN, and Plain Node.js built-in modules",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test-direct.js"
+  },
+  "keywords": [
+    "event-management",
+    "task-manager",
+    "vue3",
+    "plain-nodejs",
+    "no-framework"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {}
+>>>>>>> d5d898065cd3acdcc4b7ad192c27e2507c55267d
 }
